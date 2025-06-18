@@ -1,5 +1,7 @@
 # PyTorch has its own NVRTC, which may have a lower version than the system
 # So try to disable PyTorch's NVRTC, or import NVRTC before PyTorch
+import os
+
 import cuda.bindings.nvrtc as nvrtc
 print(f'NVRTC version: {nvrtc.nvrtcVersion()[1:]}')
 
@@ -45,15 +47,22 @@ def test_gemm() -> None:
 def test_m_grouped_gemm_contiguous() -> None:
     print('Testing grouped contiguous GEMM:')
 
+    skip_check = bool(int(os.environ.get('DEEPGEMM_SKIP_CHECK', '0')))
+
     for num_groups, expected_m_per_group, k, n, major_a, major_b in enumerate_grouped_contiguous():
         # TODO: make a stronger test
         major_opt  = 'N' if major_a == MajorTypeAB.KMajor else 'T'
         major_opt += 'T' if major_b == MajorTypeAB.KMajor else 'N'
 
         m, a, b, m_indices, d, ref_d = generate_grouped_contiguous(num_groups, expected_m_per_group, k, n, major_a, major_b)
+        if skip_check:
+            del ref_d
+
         deep_gemm.m_grouped_fp8_gemm_nt_contiguous(a, b, d, m_indices)
-        diff = calc_diff(d, ref_d)
-        assert diff < 0.001, f'{m=}, {k=}, {n=}, {major_opt}, {diff:.5f}'
+
+        if not skip_check:
+            diff = calc_diff(d, ref_d)
+            assert diff < 0.001, f'{m=}, {k=}, {n=}, {major_opt}, {diff:.5f}'
 
         # noinspection PyShadowingNames
         def test_func():
