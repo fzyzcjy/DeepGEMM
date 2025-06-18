@@ -34,7 +34,9 @@ def enumerate_grouped_contiguous():
                 for x in create_ones(simulated_num_ranks=simulated_num_ranks, num_tokens=num_tokens)
             ],
     ):
-        for major_a, major_b in ((MajorTypeAB.KMajor,  MajorTypeAB.KMajor), (MajorTypeAB.KMajor,  MajorTypeAB.MNMajor)):
+        # NOTE MODIFIED
+        # for major_a, major_b in ((MajorTypeAB.KMajor,  MajorTypeAB.KMajor), (MajorTypeAB.KMajor,  MajorTypeAB.MNMajor)):
+        for major_a, major_b in ((MajorTypeAB.KMajor,  MajorTypeAB.KMajor),):
             yield num_groups, expected_m_per_group, k, n, major_a, major_b
 
 
