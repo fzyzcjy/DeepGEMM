@@ -28,7 +28,7 @@ def enumerate_grouped_contiguous():
             (4, 8192, 7168, 4096), (4, 8192, 2048, 7168), (8, 4096, 7168, 4096), (8, 4096, 2048, 7168),
             # added
             *[
-                (288 // simulated_num_ranks, num_tokens, k, n)
+                (num_groups, num_tokens // num_groups, k, n)
                 for k, n in [
                     (7168, 4096),
                     (2048, 7168),
@@ -36,6 +36,7 @@ def enumerate_grouped_contiguous():
                 for simulated_num_ranks in [4, 8, 16, 24, 32]
                 # TODO more tokens
                 for num_tokens in [2048, 4096, 8192, 16384]
+                if (num_groups := (288 // simulated_num_ranks))
                 for _repeat in range(10)
             ],
     ):
