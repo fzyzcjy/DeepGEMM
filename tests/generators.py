@@ -17,12 +17,6 @@ def enumerate_normal():
 
 
 def enumerate_grouped_contiguous():
-    def create_ones(simulated_num_ranks, num_tokens):
-        return [
-            (288 // simulated_num_ranks, num_tokens, 7168, 4096),
-            (288 // simulated_num_ranks, num_tokens, 2048, 7168),
-        ]
-
     for num_groups, expected_m_per_group, k, n in (
             # original
             (4, 8192, 7168, 4096), (4, 8192, 2048, 7168), (8, 4096, 7168, 4096), (8, 4096, 2048, 7168),
@@ -34,8 +28,7 @@ def enumerate_grouped_contiguous():
                     (2048, 7168),
                 ]
                 for simulated_num_ranks in [4, 8, 16, 24, 32]
-                # TODO more tokens
-                for num_tokens in [2048, 4096, 8192, 16384]
+                for num_tokens in [2048, 4096, 8192, 16384, 32768, 65536, 131072]
                 if (num_groups := (288 // simulated_num_ranks))
                 for _repeat in range(10)
             ],
