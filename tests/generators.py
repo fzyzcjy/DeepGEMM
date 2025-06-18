@@ -36,6 +36,7 @@ def enumerate_grouped_contiguous():
                 for simulated_num_ranks in [4, 8, 16, 24, 32]
                 # TODO more tokens
                 for num_tokens in [2048, 4096, 8192, 16384]
+                for _repeat in range(10)
             ],
     ):
         # NOTE MODIFIED
