@@ -22,7 +22,7 @@ def enumerate_grouped_contiguous():
             (4, 8192, 7168, 4096), (4, 8192, 2048, 7168), (8, 4096, 7168, 4096), (8, 4096, 2048, 7168),
             # added
             *[
-                (num_groups, num_tokens // num_groups, k, n)
+                (num_groups, num_tokens * 8 // num_groups, k, n)
                 for k, n in [
                     (7168, 4096),
                     (2048, 7168),
