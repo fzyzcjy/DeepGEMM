@@ -117,6 +117,10 @@ if __name__ == '__main__':
     torch.manual_seed(0)
     random.seed(0)
 
+    if (num_sms := int(os.environ.get("DEEPGEMM_NUM_SMS", "-1"))) > 0:
+        print(f"set_num_sms({num_sms})")
+        deep_gemm.set_num_sms(num_sms)
+
     print('Library path:')
     print(f' > {deep_gemm.__path__}\n')
 
