@@ -80,24 +80,30 @@ def test_m_grouped_gemm_contiguous() -> None:
 def test_m_grouped_gemm_masked() -> None:
     print('Testing grouped masked GEMM:')
 
+    skip_check = bool(int(os.environ.get('DEEPGEMM_SKIP_CHECK', '0')))
+
     # TODO: merge Hopper's tests
     for num_groups, m, k, n in enumerate_grouped_masked():
-        # Test correctness
-        masked_m_candidates = list(filter(lambda candidate: candidate <= m, (128, 256, 384)))
-        for i in range(10):
-            a, b, d, ref_d = generate_grouped_masked(num_groups, m, k, n)
-            masked_m = torch.empty((num_groups, ), device='cuda', dtype=torch.int)
-            for j in range(num_groups):
-                masked_m[j] = random.choice(masked_m_candidates)
-            expected_m = min(int(masked_m.float().mean()) + 1, m)
-            deep_gemm.fp8_m_grouped_gemm_nt_masked(a, b, d, masked_m, expected_m)
-            for j in range(num_groups):
-                diff = calc_diff(d[j, :masked_m[j].item()], ref_d[j, :masked_m[j].item()])
-                assert diff < 0.001, f'{m=}, {k=}, {n=}, {j=}, masked_m={masked_m[j]}, {num_groups=}, {diff:.5f}'
+        if not skip_check:
+            # Test correctness
+            masked_m_candidates = list(filter(lambda candidate: candidate <= m, (128, 256, 384)))
+            for i in range(10):
+                a, b, d, ref_d = generate_grouped_masked(num_groups, m, k, n)
+                masked_m = torch.empty((num_groups, ), device='cuda', dtype=torch.int)
+                for j in range(num_groups):
+                    masked_m[j] = random.choice(masked_m_candidates)
+                expected_m = min(int(masked_m.float().mean()) + 1, m)
+                deep_gemm.fp8_m_grouped_gemm_nt_masked(a, b, d, masked_m, expected_m)
+                for j in range(num_groups):
+                    diff = calc_diff(d[j, :masked_m[j].item()], ref_d[j, :masked_m[j].item()])
+                    assert diff < 0.001, f'{m=}, {k=}, {n=}, {j=}, masked_m={masked_m[j]}, {num_groups=}, {diff:.5f}'
 
         # Construct full cases
         a, b, d, ref_d = generate_grouped_masked(num_groups, m, k, n)
         masked_m = torch.ones((num_groups, ), device='cuda', dtype=torch.int) * m
+
+        if skip_check:
+            del ref_d
 
         # noinspection PyShadowingNames
         def test_func():
