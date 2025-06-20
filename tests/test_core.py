@@ -1,5 +1,6 @@
 # PyTorch has its own NVRTC, which may have a lower version than the system
 # So try to disable PyTorch's NVRTC, or import NVRTC before PyTorch
+import json
 import os
 
 import cuda.bindings.nvrtc as nvrtc
@@ -108,6 +109,12 @@ def test_m_grouped_gemm_masked() -> None:
               f'{t * 1e6:4.0f} us | '
               f'{2 * num_groups * m * n * k / t / 1e12:4.0f} TFLOPS | '
               f'{count_bytes((a, b, d)) / 1e9 / t:4.0f} GB/s')
+        print(f"MAIN_OUTPUT=" + json.dumps({
+            "num_groups": num_groups, "m_per_group": m, "n": n, "k": k,
+            "t_us": t * 1e6,
+            "tflops": 2 * num_groups * m * n * k / t / 1e12,
+            "gb_per_s": count_bytes((a, b, d)) / 1e9 / t,
+        }))
     print()
 
 
