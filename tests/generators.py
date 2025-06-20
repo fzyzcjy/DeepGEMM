@@ -44,23 +44,24 @@ def enumerate_grouped_masked():
         # original
         # (1, 1024), (2, 512), (4, 256),
         # experiment 1: scan num ranks
+        # *[
+        #     # NOTE this align makes test not very accurate
+        #     (num_groups, align(num_tokens * 8 // num_groups, 128))
+        #     for simulated_num_ranks in [4, 8, 16, 24, 32, 48, 72, 144, 288]
+        #     # for num_tokens in [128] # temp
+        #     for num_tokens in [768]
+        #     if (num_groups := (288 // simulated_num_ranks))
+        #     # for _repeat in range(10)
+        # ],
+        # experiment 2: chunking
         *[
-            # NOTE this align makes test not very accurate
-            (num_groups, align(num_tokens * 8 // num_groups, 128))
-            for simulated_num_ranks in [4, 8, 16, 24, 32, 48, 72, 144, 288]
+            (num_groups // num_chunks, num_tokens * 8 // num_groups)
+            for simulated_num_ranks in [48]
             for num_tokens in [768]
+            for num_chunks in [1, 2, 3, 6]
             if (num_groups := (288 // simulated_num_ranks))
             # for _repeat in range(10)
         ],
-        # experiment 2: chunking
-        # *[
-        #     (num_groups // num_chunks, num_tokens * 8 // num_groups)
-        #     for simulated_num_ranks in [48]
-        #     for num_tokens in [768]
-        #     for num_chunks in [1, 2, 3, 6]
-        #     if (num_groups := (288 // simulated_num_ranks))
-        #     for _repeat in range(10)
-        # ],
     ):
         for k, n in ((7168, 4096), (2048, 7168), ):
             yield num_groups, m, k, n
