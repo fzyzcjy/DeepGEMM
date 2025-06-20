@@ -282,7 +282,7 @@ def fp8_m_grouped_gemm_nt_masked(a: torch.Tensor, sfa: torch.Tensor,
     num_sms, block_m, block_n, block_k, num_stages, multicast_config, smem_config = get_best_configs(
         GemmType.GroupedMasked, expected_m, n, k, num_groups, major_a, major_b, major_d, torch.float8_e4m3fn, d.dtype, num_sms)
     if num_groups > 1:
-        assert m % block_m == 0
+        assert m % block_m == 0, f"{m=} {block_m=}"
 
     tensor_map_a = make_tma_a_desc(major_a, a, m, k,
                                    multicast_config.get_ab_load_block_m(block_m), block_k,

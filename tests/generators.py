@@ -46,7 +46,7 @@ def enumerate_grouped_masked():
         # experiment 1: scan num ranks
         *[
             (num_groups, num_tokens * 8 // num_groups)
-            for simulated_num_ranks in [4, 8, 16, 24, 32, 48, 64, 72]
+            for simulated_num_ranks in [8, 16, 24, 32, 48, 64, 72]
             for num_tokens in [768]
             if (num_groups := (288 // simulated_num_ranks))
             for _repeat in range(10)
