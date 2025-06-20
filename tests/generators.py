@@ -45,6 +45,7 @@ def enumerate_grouped_masked():
         (1, 1024), (2, 512), (4, 256),
         # experiment 1: scan num ranks
         *[
+            # NOTE this align makes test not very accurate
             (num_groups, align(num_tokens * 8 // num_groups, 128))
             for simulated_num_ranks in [8, 16, 24, 32, 48, 64, 72]
             for num_tokens in [768]
