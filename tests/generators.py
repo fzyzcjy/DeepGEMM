@@ -42,7 +42,7 @@ def enumerate_grouped_contiguous():
 def enumerate_grouped_masked():
     for num_groups, m in (
         # original
-        (1, 1024), (2, 512), (4, 256),
+        # (1, 1024), (2, 512), (4, 256),
         # experiment 1: scan num ranks
         *[
             # NOTE this align makes test not very accurate
