@@ -57,8 +57,10 @@ def enumerate_grouped_masked():
         *[
             (num_groups // num_chunks, num_tokens * 8 // num_groups)
             for simulated_num_ranks in [48]
+            # for simulated_num_ranks in [24] # temp
             for num_tokens in [768]
             for num_chunks in [1, 2, 3, 6]
+            # for num_chunks in [1, 2, 3, 6, 12] # temp
             if (num_groups := (288 // simulated_num_ranks))
             # for _repeat in range(10)
         ],

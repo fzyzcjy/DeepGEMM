@@ -13,6 +13,7 @@ import deep_gemm
 from deep_gemm.utils.layout import MajorTypeAB
 from deep_gemm.testing.bench import bench_kineto
 from deep_gemm.testing.numeric import calc_diff, count_bytes
+import deep_gemm.config
 
 from generators import (
     enumerate_normal, enumerate_grouped_contiguous, enumerate_grouped_masked,
@@ -120,6 +121,7 @@ def test_m_grouped_gemm_masked() -> None:
             "t_us": t * 1e6,
             "tflops": 2 * num_groups * m * n * k / t / 1e12,
             "gb_per_s": count_bytes((a, b, d)) / 1e9 / t,
+            "num_sms": deep_gemm.config.get_num_sms(),
         }))
     print()
 
@@ -132,7 +134,6 @@ if __name__ == '__main__':
 
     if (num_sms := int(os.environ.get("DEEPGEMM_NUM_SMS", "-1"))) > 0:
         print(f"set_num_sms({num_sms})")
-        import deep_gemm.config
         deep_gemm.config.set_num_sms(num_sms)
 
     print('Library path:')
