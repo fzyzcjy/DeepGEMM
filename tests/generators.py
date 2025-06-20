@@ -52,14 +52,14 @@ def enumerate_grouped_masked():
             for _repeat in range(10)
         ],
         # experiment 2: chunking
-        *[
-            (num_groups // num_chunks, num_tokens * 8 // num_groups)
-            for simulated_num_ranks in [48]
-            for num_tokens in [768]
-            for num_chunks in [1, 2, 3, 6]
-            if (num_groups := (288 // simulated_num_ranks))
-            for _repeat in range(10)
-        ],
+        # *[
+        #     (num_groups // num_chunks, num_tokens * 8 // num_groups)
+        #     for simulated_num_ranks in [48]
+        #     for num_tokens in [768]
+        #     for num_chunks in [1, 2, 3, 6]
+        #     if (num_groups := (288 // simulated_num_ranks))
+        #     for _repeat in range(10)
+        # ],
     ):
         for k, n in ((7168, 4096), (2048, 7168), ):
             yield num_groups, m, k, n
