@@ -47,7 +47,7 @@ def enumerate_grouped_masked():
         *[
             # NOTE this align makes test not very accurate
             (num_groups, align(num_tokens * 8 // num_groups, 128))
-            for simulated_num_ranks in [8, 16, 24, 32, 48, 64, 72, 144, 288]
+            for simulated_num_ranks in [4, 8, 16, 24, 32, 48, 64, 72, 144, 288]
             for num_tokens in [768]
             if (num_groups := (288 // simulated_num_ranks))
             # for _repeat in range(10)
