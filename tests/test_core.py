@@ -118,7 +118,9 @@ def test_m_grouped_gemm_masked() -> None:
             deep_gemm.fp8_m_grouped_gemm_nt_masked(a, b, d, masked_m, m)
 
         # Test performance with fixed shapes
-        t = bench_kineto(test_func, 'fp8_gemm', suppress_kineto_output=True)
+        t = bench_kineto(test_func, 'fp8_gemm',
+                         # suppress_kineto_output=True # NOTE MODIFIED remove
+                         )
         print(f' > Perf ({num_groups=}, m_per_group={m:4}, n={n:4}, k={k:4}): '
               f'{t * 1e6:4.0f} us | '
               f'{2 * num_groups * m * n * k / t / 1e12:4.0f} TFLOPS | '
