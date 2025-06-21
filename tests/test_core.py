@@ -115,7 +115,9 @@ def test_m_grouped_gemm_masked() -> None:
 
         # noinspection PyShadowingNames
         def test_func():
+            print("hi test_func start")
             deep_gemm.fp8_m_grouped_gemm_nt_masked(a, b, d, masked_m, m)
+            print("hi test_func end")
 
         # Test performance with fixed shapes
         t = bench_kineto(test_func, 'fp8_gemm',
