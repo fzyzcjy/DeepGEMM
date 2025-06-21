@@ -111,7 +111,6 @@ def bench_kineto(fn, kernel_names, num_tests: int = 30,
     assert isinstance(kernel_names, str) or isinstance(kernel_names, tuple)
     is_tuple = isinstance(kernel_names, tuple)
     prof_lines = profiler.key_averages().table(sort_by='cuda_time_total', max_name_column_width=100).split('\n')
-    print(f"{prof_lines=}")
     kernel_names = (kernel_names, ) if isinstance(kernel_names, str) else kernel_names
     assert all([isinstance(name, str) for name in kernel_names])
     if not with_multiple_kernels:
