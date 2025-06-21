@@ -299,6 +299,9 @@ def fp8_m_grouped_gemm_nt_masked(a: torch.Tensor, sfa: torch.Tensor,
     tensor_map_sfa = make_tma_sf_desc(MajorTypeAB.MNMajor, sfa, m, k, block_m, block_k, num_groups, smem_config.swizzle_sf_mode)
     tensor_map_sfb = make_tma_sf_desc(MajorTypeAB.MNMajor, sfb, n, k, block_n, block_k, num_groups, smem_config.swizzle_sf_mode)
 
+    print("HACK: change device_index from d to a")
+    device_index = a[0].device.index
+
     kwargs = {
         # Templated or runtime arguments according to the `COMPILED_DIMS`
         'COMPILED_DIMS': compiled_dims,
@@ -330,7 +333,8 @@ def fp8_m_grouped_gemm_nt_masked(a: torch.Tensor, sfa: torch.Tensor,
         'TENSOR_MAP_C': tensor_map_d,
         'TENSOR_MAP_D': tensor_map_d,
         'STREAM': torch.cuda.current_stream().cuda_stream,
-        'DEVICE_INDEX': d.device.index
+        # 'DEVICE_INDEX': d.device.index
+        'DEVICE_INDEX': device_index
     }
 
     # Generate, build and run the kernel
