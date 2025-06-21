@@ -82,6 +82,7 @@ def test_m_grouped_gemm_masked() -> None:
     print('Testing grouped masked GEMM:')
 
     skip_check = bool(int(os.environ.get('DEEPGEMM_SKIP_CHECK', '0')))
+    output_remote_gpu = bool(int(os.environ.get('DEEPGEMM_OUTPUT_REMOTE_GPU', '0')))
 
     # TODO: merge Hopper's tests
     for num_groups, m, k, n in enumerate_grouped_masked():
@@ -102,6 +103,12 @@ def test_m_grouped_gemm_masked() -> None:
         # Construct full cases
         a, b, d, ref_d = generate_grouped_masked(num_groups, m, k, n)
         masked_m = torch.ones((num_groups, ), device='cuda', dtype=torch.int) * m
+
+        if output_remote_gpu:
+            assert d.device == a[0].device
+            d = d.to("cuda:1")
+            assert d.device != a[0].device
+            print(f"HACK: output_remote_gpu {a[0].device=} {d.device=}")
 
         if skip_check:
             del ref_d
