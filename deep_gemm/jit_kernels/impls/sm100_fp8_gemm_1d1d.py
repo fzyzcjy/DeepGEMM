@@ -299,7 +299,7 @@ def fp8_m_grouped_gemm_nt_masked(a: torch.Tensor, sfa: torch.Tensor,
     tensor_map_sfa = make_tma_sf_desc(MajorTypeAB.MNMajor, sfa, m, k, block_m, block_k, num_groups, smem_config.swizzle_sf_mode)
     tensor_map_sfb = make_tma_sf_desc(MajorTypeAB.MNMajor, sfb, n, k, block_n, block_k, num_groups, smem_config.swizzle_sf_mode)
 
-    print("HACK: change device_index from d to a")
+    # print("HACK: change device_index from d to a")
     device_index = a[0].device.index
 
     kwargs = {
