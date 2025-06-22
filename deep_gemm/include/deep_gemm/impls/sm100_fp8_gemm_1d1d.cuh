@@ -29,7 +29,8 @@ sm100_fp8_gemm_1d1d_impl(int* grouped_layout,
                          const __grid_constant__ CUtensorMap tensor_map_sfa,
                          const __grid_constant__ CUtensorMap tensor_map_sfb,
                          const __grid_constant__ CUtensorMap tensor_map_c,
-                         const __grid_constant__ CUtensorMap tensor_map_d) {
+                         const __grid_constant__ CUtensorMap tensor_map_d,
+                         const __grid_constant__ uint32_t* d_signals) {
 #if (defined(__CUDA_ARCH__) and (__CUDA_ARCH__ >= 1000)) or defined(__CLION_IDE__)
     using Barrier = cutlass::arch::ClusterTransactionBarrier;
 

@@ -56,7 +56,7 @@ static void __instantiate_kernel() {{
         {pytypes_to_ctypes[kwargs['IS_MULTICAST_ON_A']]},
         {kwargs['GEMM_TYPE']},
         {pytypes_to_ctypes[kwargs['WITH_ACCUMULATION']]},
-        {pytypes_to_ctypes[kwargs['CD_DTYPE_T']]}
+        {pytypes_to_ctypes[kwargs['CD_DTYPE_T']]},
       >);
 }};
 '''
@@ -102,13 +102,15 @@ static void __instantiate_kernel() {{
             kwargs['TENSOR_MAP_SFB'],
             kwargs['TENSOR_MAP_C'],
             kwargs['TENSOR_MAP_D'],
+            kwargs.get('D_SIGNALS'), # NOTE ADD
         )
         arg_types = (
             ctypes.c_void_p,
             ctypes.c_uint32,
             ctypes.c_uint32,
             ctypes.c_uint32,
-            None, None, None, None, None, None
+            None, None, None, None, None, None,
+            ctypes.c_void_p, # NOTE ADD
         )
         return cbd.cuLaunchKernelEx(config, kernel, (arg_values, arg_types), 0)
 
