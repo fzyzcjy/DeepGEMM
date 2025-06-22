@@ -100,6 +100,9 @@ struct Scheduler {
                     break;
 
                 // Move to check the next group
+                if (d_signals != nullptr) {
+                    TODO(d_signals + curr_group_idx);
+                }
                 curr_group_idx ++, curr_cumsum = current_m_block_cumsum;
             }
 
