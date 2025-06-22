@@ -11,7 +11,7 @@ enum class GemmType {
 };
 
 // TODO correct?
-__device__ void atomic_release_gpu_global_inc(uint32_t* addr) {
+__device__ void atomic_release_gpu_global_inc(const uint32_t* addr) {
     asm volatile (
         "atom.release.gpu.global.inc.u32 %%r0, [%0];\n"
         :
