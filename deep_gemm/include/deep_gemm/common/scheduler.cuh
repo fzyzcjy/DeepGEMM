@@ -10,15 +10,12 @@ enum class GemmType {
     GroupedMasked
 };
 
-// TODO correct?
-__device__ void atomic_release_gpu_global_add1(uint32_t* addr) {
-    uint32_t unused_value;
-    asm volatile (
-        "atom.release.gpu.global.add.u32 %0, [%1], 1;\n"
-        : "=r"(unused_value)
-        : "l"(addr)
-        : "memory"
-    );
+// src: DeepEP
+// NOTE change int -> uint32_t
+__device__ __forceinline__ int atomic_add_release_global(const uint32_t* ptr, uint32_t value) {
+    uint32_t ret;
+    asm volatile("atom.add.release.gpu.global.u32 %0, [%1], %2;" : "=r"(ret) : "l"(ptr), "r"(value));
+    return ret;
 }
 
 #pragma clang diagnostic push
@@ -112,7 +109,7 @@ struct Scheduler {
 
                 // Move to check the next group
                 if (d_signals != nullptr) {
-                    atomic_release_gpu_global_add1(d_signals + curr_group_idx);
+                    atomic_add_release_global(d_signals + curr_group_idx, 1);
                 }
                 curr_group_idx ++, curr_cumsum = current_m_block_cumsum;
             }
