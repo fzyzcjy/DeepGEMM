@@ -92,7 +92,7 @@ struct Scheduler {
         }
     }
 
-    __device__ __forceinline__ bool get_next_block(uint32_t& m_block_idx, uint32_t& n_block_idx, uint32_t* d_signals = nullptr) {
+    __device__ __forceinline__ bool get_next_block(uint32_t& m_block_idx, uint32_t& n_block_idx, uint32_t* d_signals = nullptr, bool enable_d_signals = false) {
         const auto next_block_idx = (++ current_iter) * gridDim.x + blockIdx.x;
 
         if constexpr (kGemmType == GemmType::GroupedMasked) {
@@ -108,7 +108,7 @@ struct Scheduler {
                     break;
 
                 // Move to check the next group
-                if (d_signals != nullptr) {
+                if (enable_d_signals and (d_signals != nullptr)) {
                     atomic_add_release_global(d_signals + curr_group_idx, 1);
                 }
                 curr_group_idx ++, curr_cumsum = current_m_block_cumsum;
