@@ -187,4 +187,4 @@ def fp8_m_grouped_gemm_nt_masked(a: Tuple[torch.Tensor, torch.Tensor],
     impl = {
         '100a': functools.partial(sm100_fp8_gemm_1d1d.fp8_m_grouped_gemm_nt_masked, major_a=major_a, major_b=major_b, compiled_dims=compiled_dims, d_signals=d_signals)
     }[get_device_arch()]
-    impl(a, sfa, b, sfb, d, masked_m, expected_m)
+    return impl(a, sfa, b, sfb, d, masked_m, expected_m)

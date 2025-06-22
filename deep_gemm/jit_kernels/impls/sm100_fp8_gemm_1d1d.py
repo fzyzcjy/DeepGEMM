@@ -336,9 +336,10 @@ def fp8_m_grouped_gemm_nt_masked(a: torch.Tensor, sfa: torch.Tensor,
         'DEVICE_INDEX': d.device.index,
         'D_SIGNALS': d_signals.data_ptr() if d_signals is not None else 0,
     }
-    print(f"fp8_m_grouped_gemm_nt_masked (chosen){num_sms=}")
 
     # Generate, build and run the kernel
     code = SM100FP8GemmRuntime.generate(kwargs)
     runtime = build('fp8_m_grouped_gemm', code, SM100FP8GemmRuntime, kwargs)
     runtime(**kwargs)
+
+    return dict(num_sms=num_sms)
