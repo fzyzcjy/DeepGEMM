@@ -11,10 +11,11 @@ enum class GemmType {
 };
 
 // TODO correct?
-__device__ void atomic_release_gpu_global_inc(const uint32_t* addr) {
+__device__ void atomic_release_gpu_global_inc(uint32_t* addr) {
+    uint32_t unused_value;
     asm volatile (
         "atom.release.gpu.global.inc.u32 %%r0, [%0];\n"
-        :
+        : "=r"(old)
         : "l"(addr)
         : "memory"
     );
@@ -94,7 +95,7 @@ struct Scheduler {
         }
     }
 
-    __device__ __forceinline__ bool get_next_block(uint32_t& m_block_idx, uint32_t& n_block_idx, const uint32_t* d_signals = nullptr) {
+    __device__ __forceinline__ bool get_next_block(uint32_t& m_block_idx, uint32_t& n_block_idx, uint32_t* d_signals = nullptr) {
         const auto next_block_idx = (++ current_iter) * gridDim.x + blockIdx.x;
 
         if constexpr (kGemmType == GemmType::GroupedMasked) {
