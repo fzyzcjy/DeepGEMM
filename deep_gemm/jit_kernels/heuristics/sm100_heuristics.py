@@ -148,6 +148,10 @@ def get_best_configs(gemm_type: GemmType,
     # NOTES: for double B scales, the best number of stages may be reduced
     # TODO: move stage search into `common.py`
     best_num_stages, best_smem_config, sm100_capacity = None, None, 232448
+
+    print("HACK: change sm100_capacity smem")
+    sm100_capacity = 80000
+
     stage_candidates = tuple(filter(lambda s: s <= max(k // 128, 1), (8, 7, 6, 5, 4, 3, 2, 1)))
     for num_stages in stage_candidates:
         best_smem_config = get_smem_config(best_block_m, best_block_n, block_k,
