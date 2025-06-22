@@ -56,7 +56,7 @@ static void __instantiate_kernel() {{
         {pytypes_to_ctypes[kwargs['IS_MULTICAST_ON_A']]},
         {kwargs['GEMM_TYPE']},
         {pytypes_to_ctypes[kwargs['WITH_ACCUMULATION']]},
-        {pytypes_to_ctypes[kwargs['CD_DTYPE_T']]},
+        {pytypes_to_ctypes[kwargs['CD_DTYPE_T']]}
       >);
 }};
 '''
