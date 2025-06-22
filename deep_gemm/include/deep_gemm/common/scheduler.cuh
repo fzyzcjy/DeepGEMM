@@ -10,6 +10,16 @@ enum class GemmType {
     GroupedMasked
 };
 
+// TODO correct?
+__device__ void atomic_release_gpu_global_inc(uint32_t* addr) {
+    asm volatile (
+        "atom.release.gpu.global.inc.u32 %%r0, [%0];\n"
+        :
+        : "l"(addr)
+        : "memory"
+    );
+}
+
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "cppcoreguidelines-pro-type-member-init"
 template <GemmType kGemmType,
@@ -101,7 +111,7 @@ struct Scheduler {
 
                 // Move to check the next group
                 if (d_signals != nullptr) {
-                    TODO(d_signals + curr_group_idx);
+                    atomic_release_gpu_global_inc(d_signals + curr_group_idx);
                 }
                 curr_group_idx ++, curr_cumsum = current_m_block_cumsum;
             }
