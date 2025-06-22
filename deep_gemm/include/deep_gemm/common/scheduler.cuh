@@ -15,7 +15,7 @@ __device__ void atomic_release_gpu_global_inc(uint32_t* addr) {
     uint32_t unused_value;
     asm volatile (
         "atom.release.gpu.global.inc.u32 %%r0, [%0];\n"
-        : "=r"(old)
+        : "=r"(unused_value)
         : "l"(addr)
         : "memory"
     );
