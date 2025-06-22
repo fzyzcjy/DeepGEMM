@@ -334,7 +334,7 @@ def fp8_m_grouped_gemm_nt_masked(a: torch.Tensor, sfa: torch.Tensor,
         'TENSOR_MAP_D': tensor_map_d,
         'STREAM': torch.cuda.current_stream().cuda_stream,
         'DEVICE_INDEX': d.device.index,
-        'D_SIGNALS': d_signals.data_ptr() if d_signals is not None else None,
+        'D_SIGNALS': d_signals.data_ptr() if d_signals is not None else 0,
     }
 
     # Generate, build and run the kernel
