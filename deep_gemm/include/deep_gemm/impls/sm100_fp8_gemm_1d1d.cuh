@@ -473,7 +473,7 @@ sm100_fp8_gemm_1d1d_impl(int* grouped_layout,
         DG_STATIC_ASSERT(STORE_BLOCK_N % kNumElemsPerBankGroup == 0, "Invalid swizzling");
 
         // Persistently schedule over blocks
-        while (scheduler.get_next_block(m_block_idx, n_block_idx)) {
+        while (scheduler.get_next_block(m_block_idx, n_block_idx, d_signals)) {
             dispatch_accum_stage_idx(scheduler.current_iter % kNumEpilogueStages, [&](uint32_t accum_stage_idx) {
                 auto accum_phase_idx = (scheduler.current_iter / kNumEpilogueStages) & 1;
 
