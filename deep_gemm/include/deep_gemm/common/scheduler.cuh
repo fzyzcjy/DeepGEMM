@@ -109,6 +109,7 @@ struct Scheduler {
 
                 // Move to check the next group
                 if (enable_d_signals and (d_signals != nullptr)) {
+//                     printf("hi atomic_add_release_global gridDim.x=%d blockIdx.x=%d threadIdx.x=%d\n", gridDim.x, blockIdx.x, threadIdx.x);
                     atomic_add_release_global(d_signals + curr_group_idx, 1);
                 }
                 curr_group_idx ++, curr_cumsum = current_m_block_cumsum;
