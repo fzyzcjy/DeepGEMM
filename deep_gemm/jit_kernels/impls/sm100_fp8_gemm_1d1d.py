@@ -110,7 +110,6 @@ static void __instantiate_kernel() {{
             ctypes.c_uint32,
             None, None, None, None, None, None
         )
-        print(f"hi cuLaunchKernelEx {kwargs=}")
         return cbd.cuLaunchKernelEx(config, kernel, (arg_values, arg_types), 0)
 
 
