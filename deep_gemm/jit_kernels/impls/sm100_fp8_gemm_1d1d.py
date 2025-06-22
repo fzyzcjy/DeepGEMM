@@ -102,7 +102,7 @@ static void __instantiate_kernel() {{
             kwargs['TENSOR_MAP_SFB'],
             kwargs['TENSOR_MAP_C'],
             kwargs['TENSOR_MAP_D'],
-            kwargs.get('D_SIGNALS'), # NOTE ADD
+            kwargs.get('D_SIGNALS', 0), # NOTE ADD
         )
         arg_types = (
             ctypes.c_void_p,
@@ -272,7 +272,8 @@ def fp8_m_grouped_gemm_nt_masked(a: torch.Tensor, sfa: torch.Tensor,
                                  masked_m: torch.Tensor,
                                  expected_m: int,
                                  major_a: MajorTypeAB, major_b: MajorTypeAB,
-                                 compiled_dims: str) -> None:
+                                 compiled_dims: str,
+                                 d_signals = None) -> None:
     num_groups, m, k = a.shape
     _, n, _ = b.shape
     major_d = MajorTypeCD.NMajor
@@ -332,7 +333,8 @@ def fp8_m_grouped_gemm_nt_masked(a: torch.Tensor, sfa: torch.Tensor,
         'TENSOR_MAP_C': tensor_map_d,
         'TENSOR_MAP_D': tensor_map_d,
         'STREAM': torch.cuda.current_stream().cuda_stream,
-        'DEVICE_INDEX': d.device.index
+        'DEVICE_INDEX': d.device.index,
+        'D_SIGNALS': d_signals.data_ptr() if d_signals is not None else None,
     }
 
     # Generate, build and run the kernel
