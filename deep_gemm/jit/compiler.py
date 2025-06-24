@@ -215,7 +215,9 @@ class NVCCCompiler(Compiler):
         return [*super().flags(), *[f'-I{d}' for d in cls.include_dirs()],
                 f'--gpu-architecture=sm_{get_device_arch()}',
                 '-cubin', '-O3', '--expt-relaxed-constexpr', '--expt-extended-lambda',
-                f'--compiler-options={",".join(cxx_flags)}']
+                f'--compiler-options={",".join(cxx_flags)}',
+                # NOTE MODIFIED
+                '-lineinfo']
 
     @classmethod
     def compile(cls, name: str, code: str, target_path: str) -> None:
