@@ -45,14 +45,14 @@ def enumerate_grouped_masked():
         # (1, 1024), (2, 512), (4, 256),
 
         # experiment 1: scan num ranks
-        # *[
-        #     # NOTE this align makes test not very accurate
-        #     (num_groups, align(num_tokens * 8 // num_groups, 128))
-        #     for simulated_num_ranks in [4, 8, 16, 24, 32, 48, 72, 144, 288]
-        #     for num_tokens in [32, 64, 128, 256, 384, 512, 768, 1024, 1280, 1536, 1792, 2048]
-        #     if (num_groups := (288 // simulated_num_ranks))
-        #     # for _repeat in range(10)
-        # ],
+        *[
+            # NOTE this align makes test not very accurate
+            (num_groups, align(num_tokens * 8 // num_groups, 128))
+            for simulated_num_ranks in [48]
+            for num_tokens in [768]
+            if (num_groups := (288 // simulated_num_ranks))
+            # for _repeat in range(10)
+        ],
 
         # experiment 2: chunking
         # *[
