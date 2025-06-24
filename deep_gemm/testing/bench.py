@@ -81,6 +81,7 @@ def bench_kineto(fn, kernel_names, num_tests: int = 30,
                  with_multiple_kernels: bool = False):
     # Conflict with Nsight Systems
     using_nsys = int(os.environ.get('DG_NSYS_PROFILING', 0))
+    enable_cuda_profiler = int(os.environ.get("DEEPGEMM_ENABLE_PROFILE", "0"))
 
     # By default, flush L2 with an excessive 8GB memset to give the GPU some (literal) chill time without full idle
     flush_l2_size = int(8e9 // 4)
@@ -95,10 +96,16 @@ def bench_kineto(fn, kernel_names, num_tests: int = 30,
         profiler = torch.profiler.profile(activities=[torch.profiler.ProfilerActivity.CUDA], schedule=schedule) if not using_nsys else empty_suppress()
         with profiler:
             for i in range(2):
-                for _ in range(num_tests):
+                for test_index in range(num_tests):
                     if flush_l2:
                         torch.empty(flush_l2_size, dtype=torch.int, device='cuda').zero_()
+                    if enable_cuda_profiler and i == 1 and test_index == 10:
+                        print("call cudaProfilerStart")
+                        torch.cuda.cudart().cudaProfilerStart()
                     fn()
+                    if enable_cuda_profiler and i == 1 and test_index == 10:
+                        print("call cudaProfilerStop")
+                        torch.cuda.cudart().cudaProfilerStop()
 
                 if not using_nsys:
                     profiler.step()
