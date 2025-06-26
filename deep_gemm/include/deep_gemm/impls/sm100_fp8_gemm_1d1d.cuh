@@ -214,6 +214,10 @@ sm100_fp8_gemm_1d1d_impl(int* grouped_layout,
     uint32_t m_block_idx, n_block_idx;
     auto scheduler = Scheduler<kGemmType, BLOCK_M, BLOCK_N, kNumGroups, kNumMulticast, kIsMulticastOnA>(shape_m, shape_n, grouped_layout);
 
+    if (src_signals != nullptr) {
+        wait_signal(src_signals + 0, 1);
+    }
+
     // Dispatch warps into different roles
     if (warp_idx == 0) {
         // TMA load warp

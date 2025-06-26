@@ -18,6 +18,18 @@ __device__ __forceinline__ int atomic_add_release_global(const uint32_t* ptr, ui
     return ret;
 }
 
+// copied from DeepEP
+__device__ __forceinline__ void wait_signal(uint32_t* addr, uint32_t expect_value) {
+  uint32_t ready = *addr;
+  while (ready != expect_value) {
+    asm volatile("ld.acquire.gpu.global.u32 %0, [%1];"
+                 : "=r"(ready)
+                 : "l"(addr)
+                 : "memory");
+    asm volatile("nanosleep.u32 20;");
+  };
+}
+
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "cppcoreguidelines-pro-type-member-init"
 template <GemmType kGemmType,
@@ -113,6 +125,9 @@ struct Scheduler {
                 if (enable_d_signals and (d_signals != nullptr)) {
 //                     printf("hi atomic_add_release_global gridDim.x=%d blockIdx.x=%d threadIdx.x=%d\n", gridDim.x, blockIdx.x, threadIdx.x);
                     atomic_add_release_global(d_signals + curr_group_idx, 1);
+                }
+                if (src_signals != nullptr) {
+                    wait_signal(src_signals + (curr_group_idx + 1), 1);
                 }
                 curr_group_idx ++, curr_cumsum = current_m_block_cumsum;
             }
