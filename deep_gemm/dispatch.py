@@ -150,7 +150,7 @@ def fp8_m_grouped_gemm_nt_masked(a: Tuple[torch.Tensor, torch.Tensor],
                                  expected_m: int,
                                  recipe: Optional[Tuple[int, int, int]] = None,
                                  compiled_dims: str = 'nk',
-                                 d_signals = None) -> None:
+                                 src_signals=None, d_signals=None) -> None:
     # Compiled dims can be upper cases
     compiled_dims = compiled_dims.lower()
 
@@ -185,6 +185,6 @@ def fp8_m_grouped_gemm_nt_masked(a: Tuple[torch.Tensor, torch.Tensor],
     sfb = transform_sf_into_required_layout(sfb, mn=n, k=k, recipe=recipe, num_groups=num_groups, is_sfa=False)
 
     impl = {
-        '100a': functools.partial(sm100_fp8_gemm_1d1d.fp8_m_grouped_gemm_nt_masked, major_a=major_a, major_b=major_b, compiled_dims=compiled_dims, d_signals=d_signals)
+        '100a': functools.partial(sm100_fp8_gemm_1d1d.fp8_m_grouped_gemm_nt_masked, major_a=major_a, major_b=major_b, compiled_dims=compiled_dims, src_signals=src_signals, d_signals=d_signals)
     }[get_device_arch()]
     return impl(a, sfa, b, sfb, d, masked_m, expected_m)
