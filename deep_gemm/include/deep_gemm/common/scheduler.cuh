@@ -92,7 +92,9 @@ struct Scheduler {
         }
     }
 
-    __device__ __forceinline__ bool get_next_block(uint32_t& m_block_idx, uint32_t& n_block_idx, uint32_t* d_signals = nullptr, bool enable_d_signals = false) {
+    __device__ __forceinline__ bool get_next_block(uint32_t& m_block_idx, uint32_t& n_block_idx,
+            uint32_t* src_signals = nullptr,
+            uint32_t* d_signals = nullptr, bool enable_d_signals = false) {
         const auto next_block_idx = (++ current_iter) * gridDim.x + blockIdx.x;
 
         if constexpr (kGemmType == GemmType::GroupedMasked) {

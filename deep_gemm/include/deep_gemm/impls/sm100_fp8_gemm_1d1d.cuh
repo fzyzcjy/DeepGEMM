@@ -30,7 +30,7 @@ sm100_fp8_gemm_1d1d_impl(int* grouped_layout,
                          const __grid_constant__ CUtensorMap tensor_map_sfb,
                          const __grid_constant__ CUtensorMap tensor_map_c,
                          const __grid_constant__ CUtensorMap tensor_map_d,
-                         uint32_t* d_signals) {
+                         uint32_t* src_signals, uint32_t* d_signals) {
 #if (defined(__CUDA_ARCH__) and (__CUDA_ARCH__ >= 1000)) or defined(__CLION_IDE__)
     using Barrier = cutlass::arch::ClusterTransactionBarrier;
 
@@ -218,7 +218,7 @@ sm100_fp8_gemm_1d1d_impl(int* grouped_layout,
     if (warp_idx == 0) {
         // TMA load warp
         // Persistently schedule over blocks
-        while (scheduler.get_next_block(m_block_idx, n_block_idx)) {
+        while (scheduler.get_next_block(m_block_idx, n_block_idx, src_signals)) {
             launch_k_iterations([&](uint32_t k_iter, auto type, bool is_last_iter) {
                 constexpr bool kHasDivisibleStages = std::is_same_v<decltype(type), DivisibleK>;
                 constexpr uint32_t kNumInnerStages = kHasDivisibleStages ? kNumStages : kNumLastStages;
@@ -309,7 +309,7 @@ sm100_fp8_gemm_1d1d_impl(int* grouped_layout,
                          "Invalid MMA instruction shape");
 
         // Persistently schedule over blocks
-        while (scheduler.get_next_block(m_block_idx, n_block_idx)) {
+        while (scheduler.get_next_block(m_block_idx, n_block_idx, src_signals)) {
             dispatch_accum_stage_idx(scheduler.current_iter % kNumEpilogueStages, [&](uint32_t accum_stage_idx) {
                 // Wait tensor memory empty barrier arrival
                 auto accum_phase_idx = (scheduler.current_iter / kNumEpilogueStages) & 1;
@@ -420,7 +420,7 @@ sm100_fp8_gemm_1d1d_impl(int* grouped_layout,
                 st_shared(smem_ptr + lane_idx * 4 + (i ^ (lane_idx >> 3)), values[i]);
         };
 
-        while (scheduler.get_next_block(m_block_idx, n_block_idx)) {
+        while (scheduler.get_next_block(m_block_idx, n_block_idx, src_signals)) {
             launch_k_iterations([&](uint32_t k_iter, auto type, bool is_last_iter) {
                 constexpr bool kHasDivisibleStages = std::is_same_v<decltype(type), DivisibleK>;
                 constexpr uint32_t kNumInnerStages = kHasDivisibleStages ? kNumStages : kNumLastStages;
@@ -473,7 +473,7 @@ sm100_fp8_gemm_1d1d_impl(int* grouped_layout,
         DG_STATIC_ASSERT(STORE_BLOCK_N % kNumElemsPerBankGroup == 0, "Invalid swizzling");
 
         // Persistently schedule over blocks
-        while (scheduler.get_next_block(m_block_idx, n_block_idx, d_signals, epilogue_thread_idx == 0)) {
+        while (scheduler.get_next_block(m_block_idx, n_block_idx, src_signals, d_signals, epilogue_thread_idx == 0)) {
             dispatch_accum_stage_idx(scheduler.current_iter % kNumEpilogueStages, [&](uint32_t accum_stage_idx) {
                 auto accum_phase_idx = (scheduler.current_iter / kNumEpilogueStages) & 1;
 
